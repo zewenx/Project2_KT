@@ -1,5 +1,7 @@
 import java.io.File;
 import java.io.IOException;
+import java.math.BigDecimal;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -22,50 +24,46 @@ public class GenerateARFF {
 	WordsFrequencyMap positive = new WordsFrequencyMap();
 	WordsFrequencyMap negative = new WordsFrequencyMap();
 	WordsFrequencyMap neutral = new WordsFrequencyMap();
-	
-	String threshold = "manually";
 
+	String threshold = "manually";
 	public static void main(String[] args) {
-//		new GenerateARFF().wrok("train");
-//		new GenerateARFF().wrok("dev");
+		new GenerateARFF().wrok("dev");
+		new GenerateARFF().wrok("train");
 		new GenerateARFF().wrok("test");
 	}
-
 	void wrok(String type) {
-		String filePath ="";
+		String filePath = "";
 		switch (type) {
 		case "train":
 			loadFiles(Strings.train, tweetsMap);
 			loadFiles(Strings.train_labels, tweetsLabel);
-			filePath = Strings.train_arff+"_"+threshold+Strings.arff;
+			filePath = Strings.train_arff + "_" + threshold + Strings.arff;
 			break;
 		case "dev":
 			loadFiles(Strings.dev, tweetsMap);
 			loadFiles(Strings.dev_labels, tweetsLabel);
-			filePath = Strings.dev_arff+"_"+threshold+Strings.arff;
+			filePath = Strings.dev_arff + "_" + threshold + Strings.arff;
 			break;
 		case "test":
-			loadFiles(Strings.dev, tweetsMap);
-			filePath = Strings.test_arff+"_"+threshold+Strings.arff;
+			loadFiles(Strings.test, tweetsMap);
+			filePath = Strings.test_arff + "_" + threshold + Strings.arff;
 		default:
 			break;
 		}
-		
-		
+
 		ArrayList<Attribute> attributes = new ArrayList<>();
-		
+
 		loadFeatures(attributes);
-		
-		
+
 		Instances instances = new Instances("features", attributes, 30000);
-		init(instances,attributes);
-		saveARFF(instances,filePath);
+		init(instances, attributes);
+		saveARFF(instances, filePath);
 	}
-	
-	private void saveARFF(Instances instances,String path) {
+
+	private void saveARFF(Instances instances, String path) {
 		ArffSaver saver = new ArffSaver();
 		saver.setInstances(instances);
-		
+
 		File arffFile = new File(path);
 		if (arffFile.exists()) {
 			arffFile.delete();
@@ -81,45 +79,44 @@ public class GenerateARFF {
 	}
 
 	private void init(Instances instances, ArrayList<Attribute> attributes) {
-		for(String tweetID : tweetsMap.keySet()){
+		for (String tweetID : tweetsMap.keySet()) {
 			Instance instance = new DenseInstance(attributes.size());
-			instance.setValue(attributes.get(0), Long.parseLong(tweetID));
-			for(int i = 1; i<attributes.size()-1;i++){
+			instance.setValue(attributes.get(0), tweetID);
+			for (int i = 1; i < attributes.size() - 1; i++) {
 				instance.setValue(attributes.get(i), count(tweetsMap.get(tweetID), attributes.get(i).name()));
 			}
-			if (tweetsLabel.get(tweetID)!= null) {
+			if (tweetsLabel.get(tweetID) != null) {
 				instance.setValue(attributes.get(attributes.size() - 1), tweetsLabel.get(tweetID));
 			}
 			instances.add(instance);
 		}
-		
+
 	}
-	
-	Integer count(String source, String target){
+
+	Integer count(String source, String target) {
 		return StringUtils.countMatches(source.toLowerCase(), target.toLowerCase());
 	}
-	
 
 	private void loadFeatures(ArrayList<Attribute> attributes) {
-		Attribute attributeFist = new Attribute("id", false);
+		Attribute attributeFist = new Attribute("id", true);
 		attributes.add(attributeFist);
 		try {
-			List<String> features = FileUtils.readLines(new File(Strings.featuresFile+threshold+".txt"));
+			List<String> features = FileUtils.readLines(new File(Strings.featuresFile + threshold + ".txt"));
 			for (String string : features) {
 				Attribute attribute = new Attribute(string, false);
 				attributes.add(attribute);
 			}
-			
+
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		FastVector fvClassVal = new FastVector(3);
-		 fvClassVal.addElement("positive");
-		 fvClassVal.addElement("negative");
-		 fvClassVal.addElement("neutral");
-		 Attribute ClassAttribute = new Attribute("sentiment", fvClassVal);
-		
+		fvClassVal.addElement("positive");
+		fvClassVal.addElement("negative");
+		fvClassVal.addElement("neutral");
+		Attribute ClassAttribute = new Attribute("sentiment", fvClassVal);
+
 		attributes.add(ClassAttribute);
 	}
 

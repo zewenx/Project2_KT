@@ -2,10 +2,8 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="lib" path="libs/opennlp-uima-1.7.2.jar" sourcepath="D:/z_develop/apache-opennlp-1.7.2-src.zip"/>
-	<classpathentry kind="lib" path="libs/opennlp-tools-1.7.2.jar" sourcepath="D:/z_develop/apache-opennlp-1.7.2-src.zip"/>
 	<classpathentry kind="lib" path="libs/commons-io-2.5.jar"/>
-	<classpathentry kind="lib" path="libs/weka.jar" sourcepath="D:/z_develop/weka-3-8-1/weka-src.jar"/>
+	<classpathentry kind="lib" path="libs/weka.jar" sourcepath="D:/z_develop/libs/weka-3-8-1/weka-src.jar"/>
 	<classpathentry kind="lib" path="libs/commons-lang3-3.5.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
